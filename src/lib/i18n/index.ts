@@ -19,7 +19,3 @@ export function parseLocale(raw: string | undefined): Locale {
   if (!isLocale(raw)) notFound();
   return raw;
 }
-
-export function dirOf(locale: Locale): "rtl" | "ltr" {
-  return locale === "ar" ? "rtl" : "ltr";
-}

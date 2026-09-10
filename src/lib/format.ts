@@ -19,19 +19,6 @@ export function formatPrice(amount: number, locale: Locale, currency = "DA"): st
   return `${digits} ${currency}`;
 }
 
-/** Compact price for tight slots (cards): 415 000 000 → "415 M DA" style. */
-export function formatPriceCompact(amount: number, locale: Locale, currency = "DA"): string {
-  if (amount >= 1_000_000_000) {
-    const v = (amount / 1_000_000_000).toLocaleString(locale === "fr" ? "fr-FR" : "en-US", { maximumFractionDigits: 2 });
-    return locale === "fr" ? `${v.replace(/\s/g, NBSP)} Md ${currency}` : `${v} مليار ${currency}`;
-  }
-  if (amount >= 1_000_000) {
-    const v = (amount / 1_000_000).toLocaleString("en-US", { maximumFractionDigits: 1 });
-    return `${v} M ${currency}`;
-  }
-  return formatPrice(amount, locale, currency);
-}
-
 export function priceLabel(
   p: Pick<Property, "price">,
   locale: Locale,

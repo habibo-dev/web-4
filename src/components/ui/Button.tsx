@@ -33,17 +33,3 @@ export function Button({
     </Link>
   );
 }
-
-export function ButtonEl({
-  children,
-  variant = "primary",
-  size = "md",
-  className,
-  ...rest
-}: Common & ComponentProps<"button">) {
-  return (
-    <button className={clsx("btn", `btn-${variant}`, size === "sm" && "btn-sm", className)} {...rest}>
-      {children}
-    </button>
-  );
-}
