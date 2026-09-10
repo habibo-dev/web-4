@@ -34,8 +34,16 @@ httpOnly cookies, 12 h expiry, `Secure` flag in production.
 | `/api/admin/login` | POST | password check, rate-limited (8/min) |
 | `/api/admin/logout` | POST | clears session |
 | `/api/admin/export?kind=all` | GET | authenticated JSON export |
+| `/api/uploads/<YYYY-MM>/<file>` | GET | streams an owner-submitted photo |
 
-Server actions (`components/admin/actions.ts`) mutate statuses.
+Server actions (`components/admin/actions.ts`) mutate statuses. They are
+ordinary POST endpoints whose ids ship in the page payload, so each one
+re-checks the session cookie itself (`requireAdmin()`) — never rely on the
+form only being *rendered* for an admin.
+
+Uploads are deliberately outside `public/`: `next start` serves only the
+files that were present at build time, so anything written at runtime there
+would 404. Names carry a random prefix and are therefore not enumerable.
 
 ## Scaling notes
 

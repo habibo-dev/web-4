@@ -27,7 +27,7 @@ Commandes :
 | `npm start` | sert le build |
 | `npm run typecheck` | TypeScript strict |
 | `npm run lint` | ESLint (next/core-web-vitals) |
-| `npm run check:data` | QC éditorial du catalogue (doublons, FR/AR, clés d'images, cohérence prix) |
+| `npm run check:data` | QC éditorial du catalogue (doublons, FR/AR, clés **et fichiers** d'images, cohérence prix) |
 | `bash scripts/prepare-images.sh` | convertit les PNG/JPG déposés dans `public/images` en WebP optimisés |
 
 ## Deux modes de publication
