@@ -1,11 +1,12 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { clsx } from "clsx";
 import { getMessages } from "@/lib/i18n";
 import { pathWithLocale, type Locale } from "@/lib/i18n/config";
-import { applyCatalog, filterToUrl, type CatalogFilter, type CatalogSort } from "@/lib/catalog-query";
+import { applyCatalog, filterToUrl, sortFromUrl, urlToFilter, type CatalogFilter, type CatalogSort } from "@/lib/catalog-query";
+import { STATIC_SITE } from "@/lib/submit-mode";
 import type { Property, PropertyType } from "@/lib/data/types";
 import { PropertyCard } from "./PropertyCard";
 import { SearchBar, type NeighborhoodOption } from "@/components/search/SearchBar";
@@ -29,6 +30,22 @@ export function CatalogClient({ locale, all, initialFilter, initialSort, neighbo
   const [filter, setFilter] = useState<CatalogFilter>(initialFilter);
   const [sort, setSort] = useState<CatalogSort>(initialSort);
   const [panelOpen, setPanelOpen] = useState(() => countActive(initialFilter) > 0);
+
+  /**
+   * The static build cannot read the query string on the server, so deep
+   * links (`/fr/properties?type=villa&priceMin=…`) are applied here, on
+   * mount, instead. The Node build already arrives pre-filtered.
+   */
+  useEffect(() => {
+    if (!STATIC_SITE) return;
+    const sp = new URLSearchParams(window.location.search);
+    if (![...sp.keys()].length) return;
+    const fromUrl = urlToFilter(sp);
+    const nextSort = sortFromUrl(sp);
+    setFilter({ ...fromUrl, transaction: lockTransaction ?? fromUrl.transaction });
+    setSort(nextSort);
+    setPanelOpen(countActive(fromUrl) > 0);
+  }, [lockTransaction]);
 
   const results = useMemo(() => applyCatalog(all, { ...filter, transaction: lockTransaction ?? filter.transaction }, sort), [all, filter, sort, lockTransaction]);
 

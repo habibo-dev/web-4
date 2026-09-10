@@ -104,6 +104,9 @@ export const fr = {
     heroBadge1: "Sélection de biens à Alger",
     heroBadge2: "Réponse rapide par téléphone & WhatsApp",
     heroBadge3: "Accompagnement jusqu'à la signature",
+    waKicker: "WhatsApp direct",
+    waTitle: "Décrivez-nous votre recherche en une phrase.",
+    waLead: "Un conseiller répond aux heures d'ouverture, en français ou en arabe.",
     searchCardTitle: "Rechercher un bien",
     searchCardLead: "Six critères suffisent pour cibler votre recherche.",
     categoriesTitle: "Trouver la forme de bien qu'il vous faut",
@@ -239,6 +242,8 @@ export const fr = {
     consentVisit: "J'accepte d'être recontacté au sujet de ma demande de visite.",
     consentRequired: "Veuillez accepter d'être recontacté.",
     honeypot: "Ne pas remplir",
+    waIntroVisit: "Bonjour ISLEM Immobilier, je souhaite demander une visite.",
+    waIntroContact: "Bonjour ISLEM Immobilier, j'ai une question.",
   },
   visit: {
     title: "Demander une visite",
@@ -276,6 +281,8 @@ export const fr = {
     successTitle: "Votre bien nous est parvenu",
     successLead: "Un conseiller vous rappelle sous 24 h ouvrées pour convenir d'une visite d'estimation. Conservez votre référence :",
     errorLead: "Impossible d'envoyer pour l'instant. Réessayez, ou appelez l'agence au",
+    waIntro: "Bonjour ISLEM Immobilier, je souhaite vous confier un bien.",
+    staticNote: "Version statique du site : votre demande s'ouvre dans WhatsApp, déjà rédigée — il ne reste qu'à l'envoyer."
   },
   contact: {
     kicker: "Parlons de votre projet",
@@ -309,7 +316,7 @@ export const fr = {
     areaLead: "Alger Centre et l'ensemble de la wilaya d'Alger : le triangle d'or (Hydra, El Biar, Ben Aknoun), Kouba, Bir Mourad Raïs, l'ouest résidentiel et les pôles d'affaires de l'est.",
     ctaTitle: "Passez nous voir",
     ctaLead: "Un café, un plan de la ville, et votre projet avance.",
-    disclaimer: "Cette page présente l'agence. Complétez-la depuis src/lib/data (histoire, année de création, accréditations) avant la mise en ligne.",
+    disclaimer: "Nos conseillers travaillent sur le terrain à Alger et restent joignables en français et en arabe, du dimanche au jeudi, au 30 rue Didouche Mourad.",
   },
   servicesPage: {
     kicker: "Services",

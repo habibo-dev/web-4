@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { parseLocale } from "@/lib/i18n";
 import { pathWithLocale, type Locale } from "@/lib/i18n/config";
 import { settings } from "@/lib/data/settings";
+import { sortFromUrl, urlToFilter, type CatalogFilter, type CatalogSort } from "@/lib/catalog-query";
+import { STATIC_SITE } from "@/lib/submit-mode";
 
 /* Shared plumbing for every page: typed async params (Next 15+). */
 
@@ -73,4 +75,20 @@ export function toSearchParams(sp: Record<string, string | string[] | undefined>
     else if (Array.isArray(v) && v[0]) out.set(k, String(v[0]));
   }
   return out;
+}
+
+/**
+ * Catalog deep-link seed.
+ *
+ * On the Node build the query string is read on the server, so a shared link
+ * such as `/fr/properties?type=villa&priceMin=100000000` renders already
+ * filtered. The static build has no request to read — the pages render the
+ * full catalog and `CatalogClient` applies the query string on mount.
+ */
+export async function catalogSeed(
+  searchParams: PageSearch,
+): Promise<{ filter: CatalogFilter; sort: CatalogSort }> {
+  if (STATIC_SITE) return { filter: {}, sort: "recent" };
+  const sp = toSearchParams(await searchParams);
+  return { filter: urlToFilter(sp), sort: sortFromUrl(sp) };
 }

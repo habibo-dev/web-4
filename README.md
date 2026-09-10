@@ -23,11 +23,30 @@ Commandes :
 | --- | --- |
 | `npm run dev` | serveur de dev |
 | `npm run build` | build de production (toutes les pages pré-rendues en SSG) |
+| `npm run build:static` | export 100 % statique dans `out/` (GitHub Pages, Netlify, S3) |
 | `npm start` | sert le build |
 | `npm run typecheck` | TypeScript strict |
 | `npm run lint` | ESLint (next/core-web-vitals) |
 | `npm run check:data` | QC éditorial du catalogue (doublons, FR/AR, clés d'images, cohérence prix) |
 | `bash scripts/prepare-images.sh` | convertit les PNG/JPG déposés dans `public/images` en WebP optimisés |
+
+## Deux modes de publication
+
+| | **Build Node** (`npm run build`) | **Build statique** (`npm run build:static`) |
+| --- | --- | --- |
+| Cible | VPS, Docker, Vercel | GitHub Pages, Netlify, S3 — tout hébergeur de fichiers |
+| Formulaires | POST `/api/…` → `data/db.json` + photos dans `public/uploads/` | envoi vers WhatsApp, message déjà rédigé |
+| Back-office `/admin` | oui (mot de passe) | non publié |
+| Redirection de langue | middleware | `out/index.html` |
+| `next/image` | WebP/AVIF responsives | fichiers optimisés servis tels quels |
+
+Tout le reste est identique : les 10 pages, les deux langues, le catalogue et
+ses filtres (liens profonds inclus), les galeries, les cartes, le JSON-LD,
+`sitemap.xml`, `robots.txt`, le manifeste PWA et les cartes OpenGraph.
+
+Le build statique est publié automatiquement par
+[`.github/workflows/deploy-pages.yml`](.github/workflows/deploy-pages.yml) —
+voir [`docs/DEPLOY.md`](docs/DEPLOY.md) pour l'activation en un réglage.
 
 ## Carte d'identité du site
 

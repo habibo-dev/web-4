@@ -6,6 +6,7 @@ import { getMessages } from "@/lib/i18n";
 import type { Locale } from "@/lib/i18n/config";
 import { inquiryFormSchema, collectErrors, type FieldErrors } from "@/lib/validation";
 import { CheckIcon, CalendarIcon } from "@/components/icons";
+import { STATIC_SITE, sendViaWhatsApp } from "@/lib/submit-mode";
 
 export type PropertyOption = { slug: string; title: string };
 
@@ -68,6 +69,26 @@ export function InquiryForm({
       return;
     }
     setErrors({});
+
+    // Static build: no `/api` to POST to — hand the visitor to WhatsApp.
+    if (STATIC_SITE) {
+      const property = properties.find((p) => p.slug === values.propertySlug);
+      const lines = [
+        kind === "visit" ? m.form.waIntroVisit : m.form.waIntroContact,
+        "",
+        `${m.form.name} : ${parsed.data.name}`,
+        `${m.form.phone} : ${parsed.data.phone}`,
+        parsed.data.whatsapp ? `WhatsApp : ${parsed.data.whatsapp}` : "",
+        parsed.data.email ? `E-mail : ${parsed.data.email}` : "",
+        property ? `${m.form.property} : ${property.title}` : "",
+        parsed.data.preferredDate ? `${m.form.date} : ${parsed.data.preferredDate}` : "",
+        parsed.data.message ? `${m.form.message} : ${parsed.data.message}` : "",
+      ].filter(Boolean);
+      sendViaWhatsApp(lines.join("\n"));
+      setStatus("ok");
+      return;
+    }
+
     setStatus("busy");
     try {
       const res = await fetch("/api/inquiries", {
@@ -169,6 +190,8 @@ export function InquiryForm({
       ) : null}
 
       {status === "err" ? <p className="col-span-2 field-error">{m.form.errorGeneric}</p> : null}
+
+      {STATIC_SITE ? <p className="col-span-2 text-[0.78rem] leading-relaxed text-muted/80">{m.submit.staticNote}</p> : null}
 
       <div className="col-span-2 flex flex-wrap items-center gap-4">
         <button type="submit" disabled={status === "busy"} className="btn btn-primary">

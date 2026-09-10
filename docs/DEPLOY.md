@@ -1,5 +1,38 @@
 # Deploy
 
+## Option 0 — GitHub Pages (free, permanent, no server)
+
+The repo already ships the workflow. Two settings, once:
+
+1. **Settings → Pages → Build and deployment → Source → `GitHub Actions`**
+2. Push to `main`.
+
+The site is then live, permanently, at
+`https://<user>.github.io/web-4/` — every later push to `main` republishes it
+in ~2 minutes and the URL never changes.
+
+What runs: `npm ci` → `npm run check:data` → `npm run build:static` →
+`actions/deploy-pages`. The workflow derives both `NEXT_PUBLIC_SITE_URL`
+(canonicals, sitemap, hreflang, OG cards) and `NEXT_PUBLIC_BASE_PATH`
+(`/web-4`, so assets and links resolve under the project prefix).
+
+To publish on your own domain or on a `user.github.io` repo instead, add a
+repository **variable** `SITE_URL` (e.g. `https://islemimmobilier.dz`): the
+workflow then leaves `NEXT_PUBLIC_BASE_PATH` empty and builds for the root.
+
+Trade-off: GitHub Pages serves files, so there is no Node process.
+`/api`, the `/admin` back-office and photo uploads do not exist there — the
+contact / visit / property forms hand the visitor to WhatsApp with the
+message already written out (see `src/lib/submit-mode.ts`). Everything
+visible to a visitor is identical. Need the back-office? Use Option A or C.
+
+Local preview of exactly what Pages will serve:
+
+```bash
+npm run build:static
+npx serve out
+```
+
 ## Option A — VPS (recommended: full file access for uploads/db.json)
 
 ```bash

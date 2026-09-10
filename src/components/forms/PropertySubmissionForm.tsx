@@ -9,6 +9,7 @@ import { submissionFormSchema, collectErrors, type FieldErrors } from "@/lib/val
 import { NEIGHBORHOODS } from "@/lib/data/neighborhoods";
 import { CloseIcon, LinkIcon, UploadIcon, CheckIcon } from "@/components/icons";
 import { settings } from "@/lib/data/settings";
+import { STATIC_SITE, sendViaWhatsApp } from "@/lib/submit-mode";
 
 type TypeKey = "apartment" | "villa" | "land" | "commercial" | "office";
 
@@ -80,6 +81,35 @@ export function PropertySubmissionForm({ locale }: { locale: Locale }) {
       return;
     }
     setErrors({});
+
+    // Static build: no upload endpoint — send the details over WhatsApp instead.
+    if (STATIC_SITE) {
+      const d = parsed.data;
+      const hood = NEIGHBORHOODS.find((n) => n.id === d.neighborhood)?.name[locale] ?? d.neighborhood;
+      const lines = [
+        m.submit.waIntro,
+        "",
+        `${m.submit.propertyType} : ${m.types[d.propertyType]}`,
+        `${m.submit.transactionLabel} : ${d.transaction === "sale" ? m.submit.transactionSale : m.submit.transactionRent}`,
+        `${m.submit.neighborhoodLabel} : ${hood}`,
+        d.price ? `${m.submit.priceLabel} : ${d.price}` : "",
+        d.surface ? `${m.submit.surfaceLabel} : ${d.surface}` : "",
+        d.bedrooms !== undefined ? `${m.submit.bedroomsLabel} : ${d.bedrooms}` : "",
+        `${m.submit.ownerName} : ${d.ownerName}`,
+        `${m.submit.ownerPhone} : ${d.phone}`,
+        d.whatsapp ? `WhatsApp : ${d.whatsapp}` : "",
+        d.email ? `E-mail : ${d.email}` : "",
+        cleanLinks.length ? `Photos : ${cleanLinks.join(" · ")}` : "",
+        "",
+        d.description,
+        files.length ? `(+ ${files.length} ${m.submit.photosUploaded})` : "",
+      ].filter(Boolean);
+      sendViaWhatsApp(lines.join("\n"));
+      setRecordId(`wa-${Date.now().toString(36)}`);
+      setStatus("ok");
+      return;
+    }
+
     setStatus("busy");
     try {
       const fd = new FormData();
@@ -275,6 +305,7 @@ export function PropertySubmissionForm({ locale }: { locale: Locale }) {
       </label>
 
       <p className="mt-3 text-[0.78rem] leading-relaxed text-muted/80">{settings.content.privacyNote[locale]}</p>
+      {STATIC_SITE ? <p className="mt-2 text-[0.78rem] leading-relaxed text-muted/80">{m.submit.staticNote}</p> : null}
 
       {status === "err" ? (
         <p className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-[0.88rem] font-medium text-red-700">

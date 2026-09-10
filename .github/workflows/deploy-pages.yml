@@ -1,0 +1,63 @@
+name: Deploy to GitHub Pages
+
+# Builds the static version of the site (npm run build:static) and publishes
+# it to GitHub Pages. Enable it once in the repo:
+#   Settings → Pages → Build and deployment → Source → "GitHub Actions"
+# Every push to main then refreshes the site; the URL never changes.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Editorial QC
+        run: npm run check:data
+
+      - name: Static build
+        run: npm run build:static
+        env:
+          # A project page lives at https://<user>.github.io/<repo>/ — the
+          # build needs both the public URL (canonicals, sitemap, hreflang,
+          # OG cards) and the path prefix (assets and internal links).
+          # Set the SITE_URL repository variable to publish on a custom
+          # domain or a user/org page instead; then leave BASE_PATH empty.
+          NEXT_PUBLIC_SITE_URL: ${{ vars.SITE_URL || format('https://{0}.github.io/{1}', github.repository_owner, github.event.repository.name) }}
+          NEXT_PUBLIC_BASE_PATH: ${{ vars.SITE_URL && '' || format('/{0}', github.event.repository.name) }}
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: out
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

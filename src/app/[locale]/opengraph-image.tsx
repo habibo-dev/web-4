@@ -2,10 +2,18 @@ import { ImageResponse } from "next/og";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { settings } from "@/lib/data/settings";
+import { LOCALES } from "@/lib/i18n/config";
 
 export const alt = "ISLEM Immobilier — Alger Centre";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
+/** Rendered once at build time — required for `output: "export"`. */
+export const dynamic = "force-static";
+
+export function generateStaticParams() {
+  return LOCALES.map((locale) => ({ locale }));
+}
+export const dynamicParams = false;
 
 export default async function OgImage({ params }: { params: Promise<{ locale: string }> }) {
   await params;

@@ -1,6 +1,5 @@
 import { getMessages } from "@/lib/i18n";
-import { buildMetadata, localeFrom, toSearchParams, type PageParams, type PageSearch } from "@/lib/page";
-import { urlToFilter, sortFromUrl } from "@/lib/catalog-query";
+import { buildMetadata, catalogSeed, localeFrom, type PageParams, type PageSearch } from "@/lib/page";
 import { CatalogView } from "@/components/property/CatalogView";
 
 export async function generateMetadata({ params }: { params: PageParams }) {
@@ -16,14 +15,14 @@ export async function generateMetadata({ params }: { params: PageParams }) {
 
 export default async function RentPage({ params, searchParams }: { params: PageParams; searchParams: PageSearch }) {
   const locale = await localeFrom(params);
-  const sp = toSearchParams(await searchParams);
+  const { filter, sort } = await catalogSeed(searchParams);
   const m = getMessages(locale);
 
   return (
     <CatalogView
       locale={locale}
-      initialFilter={{ ...urlToFilter(sp), transaction: "rent" }}
-      initialSort={sortFromUrl(sp)}
+      initialFilter={{ ...filter, transaction: "rent" }}
+      initialSort={sort}
       lockTransaction="rent"
       title={m.catalog.rentTitle}
       lead={m.catalog.rentLead}

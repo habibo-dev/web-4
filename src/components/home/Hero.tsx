@@ -84,15 +84,9 @@ export function Hero({ locale }: { locale: Locale }) {
               className="group mt-4 flex h-full w-full flex-col justify-between rounded-2xl border border-bone/15 bg-forest-950/35 p-6 backdrop-blur-md transition hover:border-brass-300/40 hover:bg-forest-950/50"
             >
               <div>
-                <p className="eyebrow tracking-eyebrow text-brass-300">WhatsApp direct</p>
-                <p className="font-display mt-3 text-2xl leading-snug">
-                  {locale === "fr" ? "Décrivez-nous votre recherche en une phrase." : "صِف لنا ما تبحث عنه في جملة واحدة."}
-                </p>
-                <p className="mt-3 text-sm leading-relaxed text-bone/65">
-                  {locale === "fr"
-                    ? "Un conseiller répond aux heures d'ouverture, en français ou en arabe."
-                    : "يرد عليك مستشار خلال أوقات العمل، بالفرنسية أو بالعربية."}
-                </p>
+                <p className="eyebrow tracking-eyebrow text-brass-300">{m.home.waKicker}</p>
+                <p className="font-display mt-3 text-2xl leading-snug">{m.home.waTitle}</p>
+                <p className="mt-3 text-sm leading-relaxed text-bone/65">{m.home.waLead}</p>
               </div>
               <span className="btn btn-light mt-8 w-full group-hover:border-brass-300/60">
                 <ChatIcon size={16} />

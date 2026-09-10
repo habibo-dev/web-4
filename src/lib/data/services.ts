@@ -27,14 +27,14 @@ export const services: Service[] = [
     title: { fr: "Vente", ar: "البيع" },
     tagline: { fr: "Mettre votre bien en valeur, du premier appel à la signature.", ar: "نُبرز عقارك من أول مكالمة إلى غاية التوقيع." },
     description: {
-      fr: "Estimation honnête fondée sur les prix réellement pratiqués dans votre quartier, reportage photo professionnel, annonce bilingue français-arabe et diffusion auprès de notre fichier d'acquéreurs. Nous filtra les visites et vous rendons compte de chaque retour.",
+      fr: "Estimation honnête fondée sur les prix réellement pratiqués dans votre quartier, reportage photo professionnel, annonce bilingue français-arabe et diffusion auprès de notre fichier d'acquéreurs. Nous filtrons les visites et vous rendons compte de chaque retour.",
       ar: "تقييم صادق مبني على الأسعار المطبقة فعليًا في حيك، تقرير مصوّر احترافي، إعلان باللغتين الفرنسية والعربية ونشر عبر ملف مشترينا. نُصفّي الزيارات وننقل لك ملاحظات كل واحدة.",
     },
     bullets: [
       { fr: "Estimation de marché et prix conseil", ar: "دراسة السوق والسعر الموصى به" },
       { fr: "Photos, plans et annonce bilingue", ar: "صور ومخططات وإعلان ثنائي اللغة" },
       { fr: "Filtrage des acquéreurs et visites encadrées", ar: "فرز المشترين وتأطير الزيارات" },
-      { fr: "Coordination notaire, banque et documents", ar: "تنسيق الإشهارات البنكية والمرافقات" },
+      { fr: "Coordination notaire, banque et documents", ar: "التنسيق مع الموثق والبنك وإعداد الوثائق" },
     ],
   },
   {

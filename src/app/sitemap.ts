@@ -1,4 +1,7 @@
 import type { MetadataRoute } from "next";
+
+/** Metadata route — generated at build time (required for `output: "export"`). */
+export const dynamic = "force-static";
 import { LOCALES, pathWithLocale } from "@/lib/i18n/config";
 import { properties } from "@/lib/data/properties";
 import { settings } from "@/lib/data/settings";
@@ -31,7 +34,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     }
   }
 
-  const latest = properties.map((p) => p.publishedAt).sort().at(-1) ?? new Date().toISOString();
   for (const locale of LOCALES) {
     for (const p of properties) {
       entries.push({
@@ -45,6 +47,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
       });
     }
   }
-  void latest;
   return entries;
 }

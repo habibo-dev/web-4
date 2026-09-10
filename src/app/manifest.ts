@@ -1,4 +1,7 @@
 import type { MetadataRoute } from "next";
+
+/** Metadata route — generated at build time (required for `output: "export"`). */
+export const dynamic = "force-static";
 import { settings } from "@/lib/data/settings";
 
 /** Served at /manifest.webmanifest (installable PWA basics). */

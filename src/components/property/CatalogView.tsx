@@ -1,5 +1,6 @@
+import Link from "next/link";
 import { getMessages } from "@/lib/i18n";
-import type { Locale } from "@/lib/i18n/config";
+import { pathWithLocale, type Locale } from "@/lib/i18n/config";
 import { allPublished, availableNeighborhoods, withResolvedImages } from "@/lib/data/repo";
 import type { CatalogFilter, CatalogSort } from "@/lib/catalog-query";
 import { CatalogClient } from "./CatalogClient";
@@ -33,7 +34,7 @@ export function CatalogView({
       <section className="paper-grain border-b border-line bg-sand/50">
         <div className="mx-auto max-w-[1320px] px-5 pb-10 pt-14 sm:px-6 sm:pt-16 lg:px-10">
           <nav aria-label="Fil d'Ariane" className="mb-4 text-[0.8rem] text-muted">
-            <a href={`/${locale}`} className="hover:text-ink">{m.nav.home}</a>
+            <Link href={pathWithLocale(locale)} className="hover:text-ink">{m.nav.home}</Link>
             <span className="mx-2 text-line">/</span>
             <span className="font-semibold text-ink">{title}</span>
           </nav>
