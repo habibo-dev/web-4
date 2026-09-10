@@ -84,3 +84,15 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+
+      # Diagnostic: the repo token may not be allowed to flip Pages off legacy
+      # Jekyll builds. Runs after the deploy so a failure here is a signal,
+      # not a broken deployment.
+      - name: Report Pages build type
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          bt=$(gh api "repos/$GITHUB_REPOSITORY/pages" --jq .build_type)
+          echo "Pages build_type = $bt"
+          echo "page_url = ${{ steps.deployment.outputs.page_url }}"
+          [ "$bt" = "workflow" ]
