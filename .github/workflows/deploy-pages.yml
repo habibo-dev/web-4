@@ -1,13 +1,16 @@
 name: Deploy to GitHub Pages
 
-# Builds the static version of the site (npm run build:static) and publishes
-# it to GitHub Pages. Enable it once in the repo:
-#   Settings → Pages → Build and deployment → Source → "GitHub Actions"
-# Every push to main then refreshes the site; the URL never changes.
+# Publishes the static export to GitHub Pages on every push.
+#
+# The site is a static export (`npm run build:static` → `out/`) because Pages
+# serves files, not a Node process. Everything a visitor sees is identical to
+# the Node build; only the two form endpoints and the /admin back-office need
+# a server, and on a static host the forms hand the visitor to WhatsApp with
+# the message already written out (see src/lib/submit-mode.ts).
 
 on:
   push:
-    branches: [main]
+    branches: [main, "arena/**"]
   workflow_dispatch:
 
 permissions:
@@ -36,19 +39,39 @@ jobs:
       - name: Editorial QC
         run: npm run check:data
 
+      # Pages may still be configured for legacy Jekyll builds, which cannot
+      # build a Next.js app. Switch it to workflow deployments (idempotent).
+      - name: Ensure Pages uses workflow builds
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api -X PUT "repos/$GITHUB_REPOSITORY/pages" -f build_type=workflow \
+            && echo "✓ Pages build_type = workflow" \
+            || echo "::warning::could not set build_type=workflow; continuing"
+
       - name: Static build
         run: npm run build:static
         env:
-          # A project page lives at https://<user>.github.io/<repo>/ — the
-          # build needs both the public URL (canonicals, sitemap, hreflang,
-          # OG cards) and the path prefix (assets and internal links).
-          # Set the SITE_URL repository variable to publish on a custom
-          # domain or a user/org page instead; then leave BASE_PATH empty.
+          # A project page lives at https://<user>.github.io/<repo>/ — the build
+          # needs the public URL (canonicals, sitemap, hreflang, OG cards) and
+          # the path prefix (assets + internal links). Set the SITE_URL
+          # repository variable to publish on a custom domain instead; the
+          # prefix is then left empty.
           NEXT_PUBLIC_SITE_URL: ${{ vars.SITE_URL || format('https://{0}.github.io/{1}', github.repository_owner, github.event.repository.name) }}
           NEXT_PUBLIC_BASE_PATH: ${{ vars.SITE_URL && '' || format('/{0}', github.event.repository.name) }}
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Sanity-check the export
+        run: |
+          test -f out/index.html
+          test -f out/fr/index.html
+          test -f out/ar/index.html
+          test -f out/sitemap.xml
+          test -f out/robots.txt
+          echo "✓ static export: $(find out -name '*.html' | wc -l) pages, $(du -sh out | cut -f1)"
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
         with:
           path: out
 
