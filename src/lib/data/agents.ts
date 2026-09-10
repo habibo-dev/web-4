@@ -14,7 +14,7 @@ export const agents: Agent[] = [
     role: { fr: "Directeur — ventes & investissements", ar: "مدير — المبيعات والاستثمارات" },
     bio: {
       fr: "Suit les transactions de vente d'appartements, villas et immeubles de rapport à Alger Centre et sur les hauteurs. Négociation, montage du dossier et suivi notarial.",
-      ar: "يتابع صفقات بيع الشقق والفلل والعقارات المدرة للدخل في وسط المدينة والأحياء العليا: التفاوض، إعداد الملف ومتابعة الإشهارات.",
+      ar: "يتابع صفقات بيع الشقق والفلل والعقارات المدرة للدخل في وسط المدينة والأحياء العليا: التفاوض، إعداد الملف والمتابعة لدى الموثق.",
     },
     email: "a.belkacem@islemimmobilier.dz",
     languages: ["Français", "العربية", "English"],
@@ -27,7 +27,7 @@ export const agents: Agent[] = [
     role: { fr: "Conseiller foncier & commercial", ar: "مستشار الأراضي والمحلات" },
     bio: {
       fr: "Spécialiste des terrains, locaux commerciaux et bureaux. Étude de faisabilité, vérification des actes et mise en relation avec les acquéreurs qualifiés.",
-      ar: "متخصص في الأراضي والمحلات التجارية والمكاتب: دراسات الجدوى، التحقق من الوثائق والربط بالمشتريين الجادين.",
+      ar: "متخصص في الأراضي والمحلات التجارية والمكاتب: دراسات الجدوى، التحقق من الوثائق والربط بالمشترين الجادين.",
     },
     email: "s.merabet@islemimmobilier.dz",
     languages: ["Français", "العربية"],
@@ -40,7 +40,7 @@ export const agents: Agent[] = [
     role: { fr: "Location & gestion locative", ar: "الكراء والتسيير العقاري" },
     bio: {
       fr: "Gère la location des appartements meublés et nus, la constitution des dossiers (cautions, baux) et l'état des lieux avec les propriétaires.",
-      ar: "تسيّر كراء الشقق المفروشة وغير المفروشة، وإعداد ملفات الكراء ومعاينة الحالة مع المالكين.",
+      ar: "تُسيّر كراء الشقق المفروشة وغير المفروشة، وإعداد ملفات الكراء ومعاينة الحالة مع المالكين.",
     },
     email: "l.hamidi@islemimmobilier.dz",
     languages: ["Français", "العربية", "English"],
@@ -53,7 +53,7 @@ export const agents: Agent[] = [
     role: { fr: "Estimation & mise en vitrine", ar: "التقييم والعرض الإعلامي" },
     bio: {
       fr: "Évalue les biens avant mise en vente : prix de marché, reportage photo, descriptif bilingue et diffusion ciblée auprès de notre réseau.",
-      ar: "يقوّم العقارات قبل عرضها: سعر السوق، تقرير مصوّر، وصف باللغتين ونشر موجّه عبر شبكتنا.",
+      ar: "يُقيّم العقارات قبل عرضها: سعر السوق، تقرير مصوّر، وصف باللغتين ونشر موجّه عبر شبكتنا.",
     },
     email: "y.toumi@islemimmobilier.dz",
     languages: ["Français", "العربية"],
