@@ -27,7 +27,7 @@ export default async function ContactPage({ params }: { params: PageParams }) {
   const m = getMessages(locale);
   const waIntro = m.contact.whatsappIntro;
   const options = allPublished().map((p) => ({ slug: p.slug, title: p.title[locale] }));
-  const gmaps = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(settings.contact.address.fr)}`;
+  const gmaps = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(settings.contact.address[locale])}`;
   const directions = `https://www.google.com/maps/dir/?api=1&destination=${settings.contact.mapCoords.lat},${settings.contact.mapCoords.lng}`;
 
   return (
@@ -139,7 +139,7 @@ export default async function ContactPage({ params }: { params: PageParams }) {
           lng={settings.contact.mapCoords.lng}
           zoom={16}
           label="ISLEM Immobilier — Alger Centre"
-          sublabel={settings.contact.address.fr}
+          sublabel={settings.contact.address[locale]}
           height={420}
         />
         <p className="mt-3 text-end">

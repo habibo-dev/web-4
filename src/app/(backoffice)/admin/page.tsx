@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { BrandMark } from "@/components/Brand";
 import { adminEnabled, isAdmin } from "@/lib/admin-auth";
-import { listDb } from "@/lib/store";
+import { listDb, UPLOAD_URL_PREFIX } from "@/lib/store";
 import { properties } from "@/lib/data/properties";
 import { agents } from "@/lib/data/agents";
 import { services } from "@/lib/data/services";
@@ -153,7 +153,7 @@ export default async function AdminPage() {
       </Section>
 
       {/* Submissions */}
-      <Section title="Biens soumis par les propriétaires" count={submissions.length} exportHref="/api/admin/export?kind=submissions" note="Formulaire « Déposer un bien » — photos dans /public/uploads.">
+      <Section title="Biens soumis par les propriétaires" count={submissions.length} exportHref="/api/admin/export?kind=submissions" note="Formulaire « Déposer un bien » — photos servies par /api/uploads/.">
         {submissions.length === 0 ? (
           <Empty text={"Aucun dépôt pour 'instant."} />
         ) : (
@@ -183,7 +183,7 @@ export default async function AdminPage() {
                     {s.photos.map((p, i) => (
                       <li key={i}>
                         <a href={p} target="_blank" rel="noreferrer" className="block h-16 w-24 overflow-hidden rounded-lg border border-[#ddd4c1] bg-[#f1efe7]">
-                          {p.startsWith("/uploads/") ? (
+                          {p.startsWith(UPLOAD_URL_PREFIX) ? (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img src={p} alt={`Photo ${i + 1}`} className="h-full w-full object-cover" loading="lazy" />
                           ) : (

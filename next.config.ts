@@ -25,6 +25,9 @@ const nextConfig: NextConfig = {
   ...(staticExport
     ? {
         output: "export" as const,
+        // Keep the two builds apart: sharing `.next` would leave `npm start`
+        // serving the export build (trailing-slash redirects, no middleware).
+        distDir: ".next-static",
         // GitHub Pages serves `out/` verbatim; trailing slashes make every
         // route resolve to its own `index.html` without server rewrites.
         trailingSlash: true,

@@ -9,7 +9,10 @@ import type { Settings } from "./types";
 export const settings: Settings = {
   brand: {
     name: "ISLEM Immobilier",
-    legalName: "ISLEM Immobilier — Agence immobilière, Alger Centre",
+    legalName: {
+      fr: "ISLEM Immobilier — Agence immobilière, Alger Centre",
+      ar: "ISLEM Immobilier — وكالة عقارية، وسط مدينة الجزائر",
+    },
     tagline: {
       fr: "Agence immobilière à Alger Centre",
       ar: "وكالة عقارية في وسط مدينة الجزائر",

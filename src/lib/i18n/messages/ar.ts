@@ -20,6 +20,9 @@ export const ar: Messages = {
     openImage: "تكبير الصورة",
     closeLightbox: "إغلاق المعاينة",
     openInMaps: "فتح في خرائط جوجل",
+    navMain: "التنقل الرئيسي",
+    navMobile: "التنقل على الهاتف",
+    breadcrumb: "مسار التصفح",
   },
   nav: {
     home: "الرئيسية",
@@ -203,6 +206,7 @@ export const ar: Messages = {
     agentCall: "اتصل بالوكالة",
     agentWhatsapp: "واتساب",
     agentEmail: "بريد",
+    listingWord: "العقار",
     visitBox: "زر هذا العقار",
     visitBoxLead: "تأكيد الرد خلال 24 ساعة عمل، والزيارات من الأحد إلى السبت.",
     requestVisit: "اطلب زيارة",

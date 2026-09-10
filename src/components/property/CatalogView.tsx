@@ -33,7 +33,7 @@ export function CatalogView({
     <>
       <section className="paper-grain border-b border-line bg-sand/50">
         <div className="mx-auto max-w-[1320px] px-5 pb-10 pt-14 sm:px-6 sm:pt-16 lg:px-10">
-          <nav aria-label="Fil d'Ariane" className="mb-4 text-[0.8rem] text-muted">
+          <nav aria-label={m.a11y.breadcrumb} className="mb-4 text-[0.8rem] text-muted">
             <Link href={pathWithLocale(locale)} className="hover:text-ink">{m.nav.home}</Link>
             <span className="mx-2 text-line">/</span>
             <span className="font-semibold text-ink">{title}</span>

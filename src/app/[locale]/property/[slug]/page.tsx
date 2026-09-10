@@ -119,7 +119,7 @@ export default async function PropertyPage({ params }: { params: Params }) {
       {/* ── header ── */}
       <section className="border-b border-line bg-sand/40">
         <div className="mx-auto max-w-[1320px] px-5 pb-8 pt-6 sm:px-6 lg:px-10">
-          <nav aria-label="Fil d'Ariane" className="text-[0.78rem] text-muted">
+          <nav aria-label={m.a11y.breadcrumb} className="text-[0.78rem] text-muted">
             <ol className="flex flex-wrap items-center gap-1.5">
               <li>
                 <Link href={pathWithLocale(locale)} className="hover:text-ink">{m.nav.home}</Link>
@@ -278,7 +278,7 @@ export default async function PropertyPage({ params }: { params: Params }) {
             <p className="mt-4 text-[0.75rem] leading-relaxed text-muted">{m.detail.visitBoxLead}</p>
           </div>
 
-          <AgentCard agent={agent} locale={locale} title={`Bien ${p.reference} — ${p.title[locale]}`} whatsappText={waText} />
+          <AgentCard agent={agent} locale={locale} title={`${m.detail.listingWord} ${p.reference} — ${p.title[locale]}`} whatsappText={waText} />
 
           <p className="rounded-2xl border border-line bg-sand/50 px-4 py-3.5 text-[0.75rem] leading-relaxed text-muted">
             <strong className="font-semibold text-ink">{m.detail.disclaimerTitle} — </strong>

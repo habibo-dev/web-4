@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { clsx } from "clsx";
 import { ChevronLeftIcon, ChevronDownIcon, CloseIcon, ExpandIcon } from "@/components/icons";
@@ -14,6 +14,7 @@ import { getMessages } from "@/lib/i18n";
 export function Gallery({ images, locale }: { images: { src: string; alt: { fr: string; ar: string } }[]; locale: Locale }) {
   const m = getMessages(locale);
   const [open, setOpen] = useState<number | null>(null);
+  const dialogRef = useRef<HTMLDivElement | null>(null);
 
   const close = useCallback(() => setOpen(null), []);
   const step = useCallback(
@@ -21,20 +22,50 @@ export function Gallery({ images, locale }: { images: { src: string; alt: { fr: 
     [images.length],
   );
 
+  /** Keep Tab inside the lightbox while it is open. */
+  const trapTab = useCallback((e: KeyboardEvent) => {
+    const root = dialogRef.current;
+    if (!root) return;
+    const focusables = root.querySelectorAll<HTMLElement>(
+      'button:not([disabled]), [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+    );
+    if (!focusables.length) return;
+    const first = focusables[0]!;
+    const last = focusables[focusables.length - 1]!;
+    const active = document.activeElement;
+    if (e.shiftKey && (active === first || !root.contains(active))) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && (active === last || !root.contains(active))) {
+      e.preventDefault();
+      first.focus();
+    }
+  }, []);
+
   useEffect(() => {
     if (open === null) return;
+    const rtl = document.documentElement.dir === "rtl";
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") close();
-      if (e.key === "ArrowRight") step(1);
-      if (e.key === "ArrowLeft") step(-1);
+      if (e.key === "Escape") {
+        close();
+        return;
+      }
+      // In RTL the reading direction — and the on-screen arrows — are
+      // mirrored, so the arrow keys must be mirrored too.
+      if (e.key === "ArrowRight") step(rtl ? -1 : 1);
+      if (e.key === "ArrowLeft") step(rtl ? 1 : -1);
+      if (e.key === "Tab") trapTab(e);
     };
+    const previousFocus = document.activeElement as HTMLElement | null;
     document.addEventListener("keydown", onKey);
     document.documentElement.style.overflow = "hidden";
+    dialogRef.current?.focus();
     return () => {
       document.removeEventListener("keydown", onKey);
       document.documentElement.style.overflow = "";
+      previousFocus?.focus?.();
     };
-  }, [open, close, step]);
+  }, [open, close, step, trapTab]);
 
   const [touchX, setTouchX] = useState<number | null>(null);
 
@@ -82,9 +113,11 @@ export function Gallery({ images, locale }: { images: { src: string; alt: { fr: 
       {open !== null ? (
         <div
           className="fixed inset-0 z-[90] flex flex-col bg-forest-950/97 backdrop-blur-sm animate-fade-in"
+          ref={dialogRef}
           role="dialog"
           aria-modal="true"
           aria-label={m.detail.gallery}
+          tabIndex={-1}
           onClick={close}
           onTouchStart={(e) => setTouchX(e.touches[0]?.clientX ?? null)}
           onTouchEnd={(e) => {

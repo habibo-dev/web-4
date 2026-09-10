@@ -13,6 +13,8 @@ import { agents } from "../src/lib/data/agents";
 import { services } from "../src/lib/data/services";
 import { testimonials } from "../src/lib/data/testimonials";
 import { propertySchema, agentSchema, serviceSchema, testimonialSchema } from "../src/lib/data/types";
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 
 const errors: string[] = [];
 const seen: Record<string, Set<string>> = { id: new Set(), slug: new Set(), reference: new Set() };
@@ -54,6 +56,12 @@ for (const s of services) if (!serviceSchema.safeParse(s).success) errors.push(`
 for (const t of testimonials) {
   if (!testimonialSchema.safeParse(t).success) errors.push(`testimonial ${t.id}: schema invalid`);
   if (!t.approved) errors.push(`testimonial ${t.id}: unapproved testimonial present in published dataset`);
+}
+
+/* Image files must exist on disk, not just as registry keys — a missing
+   file renders a broken <img> that no schema check would catch. */
+for (const [key, lib] of Object.entries(IMAGE_LIB)) {
+  if (!existsSync(join(process.cwd(), "public", lib.src))) errors.push(`imageLibrary "${key}": file missing → public${lib.src}`);
 }
 
 const counts = properties.reduce<Record<string, number>>((acc, p) => {

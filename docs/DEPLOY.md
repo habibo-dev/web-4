@@ -104,13 +104,13 @@ CMD ["npm","start"]
 
 ```bash
 docker build -t islem . && docker run -p 3000:3000 --env-file .env.local \
-  -v islem-data:/app/data -v islem-uploads:/app/public/uploads islem
+  -v islem-data:/app/data islem
 ```
 
 ## Option C — Vercel / serverless
 
 Works out of the box (middleware, sitemap, robots, OG routes). Caveats:
-`data/db.json` + `public/uploads` are ephemeral there — wire the two form
+`data/db.json` + `data/uploads` are ephemeral there — wire the two form
 routes to a database/blob storage (Postgres, Turso, Supabase; see
 docs/CMS.md) or keep the agency on Option A.
 

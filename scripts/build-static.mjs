@@ -28,6 +28,30 @@ const SERVER_ONLY = [
   "middleware.ts",
 ];
 
+/**
+ * `next build` in export mode rewrites the default `.next` even when a custom
+ * `distDir` is configured, which would leave `npm start` serving the export
+ * (trailing-slash redirects, no middleware). Move the Node build aside for
+ * the duration of the static build and put it back afterwards.
+ */
+const NODE_DIST = path.join(root, ".next");
+const NODE_DIST_PARKED = path.join(root, ".next-node-parked");
+
+function parkNodeDist() {
+  fs.rmSync(NODE_DIST_PARKED, { recursive: true, force: true });
+  if (fs.existsSync(NODE_DIST)) {
+    fs.renameSync(NODE_DIST, NODE_DIST_PARKED);
+    console.log("  parked  .next/ (Node build preserved)");
+  }
+}
+
+function restoreNodeDist() {
+  if (!fs.existsSync(NODE_DIST_PARKED)) return;
+  fs.rmSync(NODE_DIST, { recursive: true, force: true });
+  fs.renameSync(NODE_DIST_PARKED, NODE_DIST);
+  console.log("  restored  .next/ (Node build)");
+}
+
 function park() {
   fs.rmSync(parked, { recursive: true, force: true });
   fs.mkdirSync(parked, { recursive: true });
@@ -60,6 +84,20 @@ function restore() {
  * handled by middleware on the Node build), so write a tiny locale picker
  * that mirrors `detectLocale()` in `src/lib/i18n/config.ts`.
  */
+/**
+ * With a custom `distDir` Next writes the export INTO that directory rather
+ * than `out/`, so move it to the documented location. The Node build's
+ * `.next` is never touched, which keeps `npm start` serving the server build.
+ */
+function publishOut() {
+  const staged = path.join(root, ".next-static");
+  const out = path.join(root, "out");
+  if (!fs.existsSync(staged)) throw new Error("static export produced no .next-static/");
+  fs.rmSync(out, { recursive: true, force: true });
+  fs.renameSync(staged, out);
+  console.log("  published  .next-static/ → out/");
+}
+
 function writeRootRedirect() {
   const html = `<!doctype html>
 <html lang="fr">
@@ -99,6 +137,7 @@ function writeRootRedirect() {
 }
 
 console.log("▸ Static export build (GitHub Pages / any static host)");
+parkNodeDist();
 park();
 let code = 1;
 try {
@@ -111,9 +150,13 @@ try {
     },
   });
   code = build.status ?? 1;
-  if (code === 0) writeRootRedirect();
+  if (code === 0) {
+    publishOut();
+    writeRootRedirect();
+  }
 } finally {
   restore();
+  restoreNodeDist();
 }
 
 if (code !== 0) {

@@ -3,6 +3,8 @@
 
 # next.js
 /.next/
+/.next-static/
+/.next-node-parked/
 /out/
 next-env.d.ts
 /tsconfig.tsbuildinfo
@@ -12,9 +14,9 @@ next-env.d.ts
 
 # runtime data (inquiries, submissions, uploads) — created on first write
 /data/db.json
-/public/uploads/*
+/data/uploads/*
 !/data/.gitkeep
-!/public/uploads/.gitkeep
+!/data/uploads/.gitkeep
 
 # env
 .env

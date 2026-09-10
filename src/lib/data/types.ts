@@ -187,7 +187,7 @@ export const settingsSchema = z.object({
   brand: z.object({
     name: z.string(),
     tagline: l10nSchema,
-    legalName: z.string(), // registered company name, configurable
+    legalName: l10nSchema, // registered company name, configurable
   }),
   contact: z.object({
     phoneE164: z.string(), // used for tel: + wa.me links

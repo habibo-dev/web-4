@@ -110,16 +110,43 @@ export async function setRecordStatus(
 
 /* ── uploads (submission photos) ─────────────────────────────────── */
 
-const UPLOAD_ROOT = path.join(process.cwd(), "public", "uploads");
+/**
+ * Uploads live OUTSIDE `public/` on purpose: `next start` only serves the
+ * files that were in `public/` when the build ran, so anything written at
+ * runtime would 404. They are streamed by `app/api/uploads/[...path]` instead.
+ */
+export const UPLOAD_ROOT = path.join(process.cwd(), "data", "uploads");
+export const UPLOAD_URL_PREFIX = "/api/uploads/";
 
 export async function saveUpload(filename: string, buffer: Buffer): Promise<string> {
-  const safeBase = filename.replace(/[^\w.-]+/g, "_").replace(/^\.+/, "");
+  const safeBase = filename.replace(/[^\w.-]+/g, "_").replace(/^\.+/, "") || "photo";
   const month = new Date().toISOString().slice(0, 7);
   const dir = path.join(UPLOAD_ROOT, month);
   await fs.mkdir(dir, { recursive: true });
   const finalName = `${randomBytes(4).toString("hex")}-${safeBase}`;
   await fs.writeFile(path.join(dir, finalName), buffer);
-  return `/uploads/${month}/${finalName}`;
+  return `${UPLOAD_URL_PREFIX}${month}/${finalName}`;
+}
+
+/**
+ * Resolve an upload URL path to an absolute file path, refusing anything that
+ * escapes the upload root (`..`, absolute paths, NUL bytes, symlinks out).
+ */
+export async function resolveUploadPath(rel: string): Promise<string | null> {
+  if (!rel || rel.includes("\0")) return null;
+  const target = path.resolve(UPLOAD_ROOT, rel);
+  const root = path.resolve(UPLOAD_ROOT);
+  if (target !== root && !target.startsWith(root + path.sep)) return null;
+  try {
+    const st = await fs.stat(target);
+    if (!st.isFile()) return null;
+    const real = await fs.realpath(target);
+    const realRoot = await fs.realpath(root);
+    if (real !== realRoot && !real.startsWith(realRoot + path.sep)) return null;
+  } catch {
+    return null;
+  }
+  return target;
 }
 
 export function isAllowedImage(name: string): boolean {

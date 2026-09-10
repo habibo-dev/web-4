@@ -123,7 +123,7 @@ export function Footer({ locale }: { locale: Locale }) {
       <div className="border-t border-bone/10">
         <div className="mx-auto flex max-w-[1320px] flex-wrap items-center justify-between gap-x-6 gap-y-2 px-5 py-5 text-[0.8rem] text-bone/50 sm:px-6 lg:px-10">
           <p>
-            © {year} {settings.brand.legalName}. {m.footer.rights}
+            © {year} {settings.brand.legalName[locale]}. {m.footer.rights}
           </p>
           <div className="flex flex-wrap items-center gap-x-5 gap-y-1">
             <Link href={pathWithLocale(locale, "/legal")} className="hover:text-bone/80">

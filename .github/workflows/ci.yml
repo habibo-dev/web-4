@@ -1,0 +1,51 @@
+name: CI
+
+# Runs the project's own checks on every push and pull request:
+# editorial QC, TypeScript strict, ESLint, then both builds.
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Editorial QC (catalogue integrity)
+        run: npm run check:data
+
+      - name: TypeScript (strict)
+        run: npm run typecheck
+
+      - name: ESLint
+        run: npm run lint
+
+      - name: Node build
+        run: npm run build
+
+      - name: Static build (GitHub Pages artifact)
+        run: npm run build:static
+
+      - name: Static build sanity
+        run: |
+          test -f out/index.html
+          test -f out/fr/index.html
+          test -f out/ar/index.html
+          test -f out/sitemap.xml
+          test -f out/robots.txt
+          echo "static export OK: $(find out -name '*.html' | wc -l) pages"

@@ -13,7 +13,8 @@ const MAX_FILES = 6;
 
 /**
  * POST /api/property-submissions — multipart (fields + photos).
- * Photos go to /public/uploads/YYYY-MM/ and are referenced by path.
+ * Photos go to data/uploads/YYYY-MM/ and are served by /api/uploads/<path>
+ * (files written at runtime cannot live in public/ — see lib/store.ts).
  */
 export async function POST(req: Request) {
   const ip = clientIp(req);

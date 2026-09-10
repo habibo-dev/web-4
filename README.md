@@ -35,7 +35,7 @@ Commandes :
 | | **Build Node** (`npm run build`) | **Build statique** (`npm run build:static`) |
 | --- | --- | --- |
 | Cible | VPS, Docker, Vercel | GitHub Pages, Netlify, S3 — tout hébergeur de fichiers |
-| Formulaires | POST `/api/…` → `data/db.json` + photos dans `public/uploads/` | envoi vers WhatsApp, message déjà rédigé |
+| Formulaires | POST `/api/…` → `data/db.json` + photos dans `data/uploads/` | envoi vers WhatsApp, message déjà rédigé |
 | Back-office `/admin` | oui (mot de passe) | non publié |
 | Redirection de langue | middleware | `out/index.html` |
 | `next/image` | WebP/AVIF responsives | fichiers optimisés servis tels quels |
@@ -85,7 +85,7 @@ settings.ts       → coordonnées, horaires, SEO,     │
 Les **demandes entrantes** (visites, contact, dépôts de biens avec photos)
 sont validées par les mêmes schémas côté client **et** serveur
 (`/api/inquiries`, `/api/property-submissions`), persistées dans
-`data/db.json` et stockées dans `public/uploads/` — voir
+`data/db.json` et stockées dans `data/uploads/` (servies par `/api/uploads/…`) — voir
 [`docs/DATA-MODELS.md`](docs/DATA-MODELS.md) et
 [`docs/CMS.md`](docs/CMS.md).
 

@@ -14,6 +14,16 @@ export function Header({ locale, m }: { locale: Locale; m: Messages }) {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  /**
+   * `usePathname()` drops the query string, so the language switcher would
+   * silently discard catalog filters (`/fr/properties?type=villa`). Read it
+   * from the location instead — client-only, so SSR markup stays stable.
+   */
+  const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    setSearch(window.location.search);
+  }, [pathname]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -59,7 +69,7 @@ export function Header({ locale, m }: { locale: Locale; m: Messages }) {
           <Wordmark className="hidden min-[420px]:flex" />
         </Link>
 
-        <nav className="mx-auto hidden items-center gap-0.5 lg:flex" aria-label="Navigation principale">
+        <nav className="mx-auto hidden items-center gap-0.5 lg:flex" aria-label={m.a11y.navMain}>
           {links.map((l) => (
             <Link
               key={l.href}
@@ -83,7 +93,7 @@ export function Header({ locale, m }: { locale: Locale; m: Messages }) {
             <span dir="ltr">{settings.contact.phoneDisplay}</span>
           </a>
           <Link
-            href={switchLocalePath(pathname || `/${locale}`, other)}
+            href={`${switchLocalePath(pathname || `/${locale}`, other)}${search}`}
             className="rounded-full border border-line bg-white px-3.5 py-2 text-[0.82rem] font-semibold text-ink transition hover:border-forest-800"
             aria-label={m.a11y.lang}
           >
@@ -115,7 +125,7 @@ export function Header({ locale, m }: { locale: Locale; m: Messages }) {
         )}
         inert={!open}
       >
-        <nav className="flex flex-col gap-1 px-5 pt-5" aria-label="Navigation mobile">
+        <nav className="flex flex-col gap-1 px-5 pt-5" aria-label={m.a11y.navMobile}>
           {links.map((l, i) => (
             <Link
               key={l.href}

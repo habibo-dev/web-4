@@ -18,6 +18,9 @@ export const fr = {
     openImage: "Agrandir la photo",
     closeLightbox: "Fermer l'aperçu",
     openInMaps: "Ouvrir dans Google Maps",
+    navMain: "Navigation principale",
+    navMobile: "Navigation mobile",
+    breadcrumb: "Fil d'Ariane",
   },
   nav: {
     home: "Accueil",
@@ -201,6 +204,7 @@ export const fr = {
     agentCall: "Appeler l'agence",
     agentWhatsapp: "WhatsApp",
     agentEmail: "E-mail",
+    listingWord: "Bien",
     visitBox: "Visiter ce bien",
     visitBoxLead: "Réponse confirmée sous 24 h ouvrées. Visites du dimanche au samedi.",
     requestVisit: "Demander une visite",

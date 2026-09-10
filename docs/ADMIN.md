@@ -21,7 +21,7 @@ httpOnly cookies, 12 h expiry, `Secure` flag in production.
   Archivé`. Phone/WhatsApp/e-mail are linked actions; the referenced
   listing opens in a new tab.
 - **Biens soumis** — owner submissions incl. description, price hint,
-  surface, uploaded photos (served from `/public/uploads/`) and external
+  surface, uploaded photos (stored in `data/uploads/`, served by `/api/uploads/…`) and external
   links; workflow `Nouveau → En revue → Rappelé → Publié → Clôturé`.
 - **Export JSON** — one click for the full set (`/api/admin/export`).
 
@@ -51,4 +51,4 @@ to S3-compatible storage if needed (returned paths are already URLs).
 2. HTTPS only (cookies are `Secure`).
 3. Rate limiting is in-memory: add a WAF/CDN rule on `/api/*` if the
    agency faces traffic abuse.
-4. Back up `data/db.json` and `public/uploads/` (daily cron recommended).
+4. Back up `data/db.json` and `data/uploads/` (daily cron recommended).

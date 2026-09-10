@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { clsx } from "clsx";
 import { getMessages } from "@/lib/i18n";
 import type { Locale } from "@/lib/i18n/config";
@@ -29,6 +29,25 @@ export function SearchBar({ locale, value, onChange, neighborhoods, variant = "p
     sMin: value.surfaceMin ? String(value.surfaceMin) : "",
     sMax: value.surfaceMax ? String(value.surfaceMax) : "",
   });
+
+  /**
+   * The numeric fields are local until blur, so they can drift from the
+   * filter that actually applies (deep link on mount, "clear all", the
+   * static build hydrating from the query string). Re-sync them whenever the
+   * incoming values change — the guard keeps typing untouched, because
+   * typing alone does not change `value`.
+   */
+  useEffect(() => {
+    setBudgetText((b) => {
+      const next = {
+        min: value.priceMin ? String(value.priceMin) : "",
+        max: value.priceMax ? String(value.priceMax) : "",
+        sMin: value.surfaceMin ? String(value.surfaceMin) : "",
+        sMax: value.surfaceMax ? String(value.surfaceMax) : "",
+      };
+      return next.min === b.min && next.max === b.max && next.sMin === b.sMin && next.sMax === b.sMax ? b : next;
+    });
+  }, [value.priceMin, value.priceMax, value.surfaceMin, value.surfaceMax]);
 
   const set = (patch: Partial<CatalogFilter>) => onChange({ ...value, ...patch });
   const toNum = (s: string) => {

@@ -1,5 +1,13 @@
 import { settings } from "@/lib/data/settings";
+import { getPropertyBySlug } from "@/lib/data/repo";
 import type { Inquiry, Submission } from "@/lib/data/types";
+
+/** The form stores a slug; the agency reads a title. */
+function propertyLabel(slug: string): string {
+  const p = getPropertyBySlug(slug);
+  if (!p) return slug;
+  return `${p.title.fr} (${p.reference})`;
+}
 
 /**
  * Optional e-mail notification via Resend (no SDK — one fetch call).
@@ -39,7 +47,7 @@ export function inquiryEmailBody(i: Inquiry): string {
     `Téléphone: ${i.phone}`,
     i.whatsapp ? `WhatsApp: ${i.whatsapp}` : null,
     i.email ? `Email: ${i.email}` : null,
-    i.propertySlug ? `Bien: ${i.propertySlug}` : null,
+    i.propertySlug ? `Bien: ${propertyLabel(i.propertySlug)}` : null,
     i.preferredDate ? `Date souhaitée: ${i.preferredDate}` : null,
     `Langue: ${i.locale}`,
     "",

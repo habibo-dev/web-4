@@ -22,8 +22,16 @@ export function rateLimit(key: string, limit: number, windowMs: number): boolean
   return true;
 }
 
-export function clientIp(req: Request): string {
-  const fwd = req.headers.get("x-forwarded-for");
-  if (fwd) return fwd.split(",")[0]!.trim();
+/**
+ * Best-effort client address. Behind a proxy the forwarded headers are the
+ * only signal available; without one every request would otherwise collapse
+ * into a single shared bucket and the limits would apply site-wide.
+ */
+export function clientIp(req: { headers: { get(name: string): string | null } }): string {
+  const h = req.headers;
+  for (const name of ["x-forwarded-for", "x-real-ip", "cf-connecting-ip", "fly-client-ip"]) {
+    const v = h.get(name);
+    if (v) return v.split(",")[0]!.trim();
+  }
   return "local";
 }
