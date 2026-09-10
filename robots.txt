@@ -1,0 +1,7 @@
+User-Agent: *
+Allow: /
+Disallow: /admin
+Disallow: /api/
+
+Host: https://habibo-dev.github.io/web-4
+Sitemap: https://habibo-dev.github.io/web-4/sitemap.xml

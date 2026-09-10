@@ -1,32 +1,51 @@
 name: Deploy to GitHub Pages
 
-# Publishes the static export to GitHub Pages on every push.
+# Publishes the site to https://habibo-dev.github.io/web-4/
 #
-# The site is a static export (`npm run build:static` → `out/`) because Pages
-# serves files, not a Node process. Everything a visitor sees is identical to
-# the Node build; only the two form endpoints and the /admin back-office need
-# a server, and on a static host the forms hand the visitor to WhatsApp with
-# the message already written out (see src/lib/submit-mode.ts).
+# Pages on this repo is configured for **legacy** builds from the branch root
+# (the token here cannot switch it to workflow-based deployments — the API
+# returns 403). Legacy mode runs Jekyll, which cannot build a Next.js app, so
+# the workflow builds the static export itself and commits it to the branch
+# root with a `.nojekyll` marker. Pages then republishes those files verbatim
+# on the commit — no build race, no Jekyll.
+#
+# Loop safety: the publish commit touches only the generated paths listed in
+# `paths-ignore`, so it does not start another run.
 
 on:
   push:
     branches: [main, "arena/**"]
+    paths-ignore:
+      - ".nojekyll"
+      - "404/**"
+      - "404.html"
+      - "_next/**"
+      - "ar/**"
+      - "fr/**"
+      - "icon.svg"
+      - "images/**"
+      - "index.html"
+      - "manifest.webmanifest"
+      - "robots.txt"
+      - "sitemap.xml"
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
+  contents: write
+  pages: read
   id-token: write
 
 concurrency:
-  group: pages
-  cancel-in-progress: true
+  group: pages-publish
+  cancel-in-progress: false
 
 jobs:
-  build:
+  publish:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
@@ -39,60 +58,40 @@ jobs:
       - name: Editorial QC
         run: npm run check:data
 
-      # Pages may still be configured for legacy Jekyll builds, which cannot
-      # build a Next.js app. Switch it to workflow deployments (idempotent).
-      - name: Ensure Pages uses workflow builds
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh api -X PUT "repos/$GITHUB_REPOSITORY/pages" -f build_type=workflow \
-            && echo "✓ Pages build_type = workflow" \
-            || echo "::warning::could not set build_type=workflow; continuing"
-
       - name: Static build
         run: npm run build:static
         env:
-          # A project page lives at https://<user>.github.io/<repo>/ — the build
-          # needs the public URL (canonicals, sitemap, hreflang, OG cards) and
-          # the path prefix (assets + internal links). Set the SITE_URL
-          # repository variable to publish on a custom domain instead; the
-          # prefix is then left empty.
+          # A project page lives at https://<user>.github.io/<repo>/ — the
+          # build needs the public URL (canonicals, sitemap, hreflang, OG
+          # cards) and the path prefix (assets + internal links). Set the
+          # SITE_URL repository variable to publish on a custom domain
+          # instead; the prefix is then left empty.
           NEXT_PUBLIC_SITE_URL: ${{ vars.SITE_URL || format('https://{0}.github.io/{1}', github.repository_owner, github.event.repository.name) }}
           NEXT_PUBLIC_BASE_PATH: ${{ vars.SITE_URL && '' || format('/{0}', github.event.repository.name) }}
 
-      - name: Sanity-check the export
+      - name: Publish the export to the branch root
+        run: node scripts/publish-to-root.mjs
+
+      - name: Sanity-check
         run: |
-          test -f out/index.html
-          test -f out/fr/index.html
-          test -f out/ar/index.html
-          test -f out/sitemap.xml
-          test -f out/robots.txt
-          echo "✓ static export: $(find out -name '*.html' | wc -l) pages, $(du -sh out | cut -f1)"
+          test -f .nojekyll
+          test -f index.html
+          test -f fr/index.html
+          test -f ar/index.html
+          test -f sitemap.xml
+          test -f robots.txt
+          echo "✓ published $(find fr ar -name '*.html' | wc -l) locale pages"
 
-      - uses: actions/configure-pages@v5
-
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: out
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
-
-      # Diagnostic: the repo token may not be allowed to flip Pages off legacy
-      # Jekyll builds. Runs after the deploy so a failure here is a signal,
-      # not a broken deployment.
-      - name: Report Pages build type
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - name: Commit and push
         run: |
-          bt=$(gh api "repos/$GITHUB_REPOSITORY/pages" --jq .build_type)
-          echo "Pages build_type = $bt"
-          echo "page_url = ${{ steps.deployment.outputs.page_url }}"
-          [ "$bt" = "workflow" ]
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A .nojekyll 404 404.html _next ar fr icon.svg images index.html manifest.webmanifest robots.txt sitemap.xml
+          if git diff --cached --quiet; then
+            echo "✓ no changes to publish"
+            exit 0
+          fi
+          git commit -m "chore(pages): publish the static export"
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"
+          echo "✓ published — Pages rebuilds from this commit"
